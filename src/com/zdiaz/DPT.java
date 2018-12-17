@@ -15,14 +15,24 @@ public class DPT {
 	  * @param value
 	  * @return Object
 	  */
-	private static Object castToPrimitiveType(String dataTypeName, String value) {
+	private static Object castToPrimitiveType(Primitive dataTypeName, String value) {
 		switch(dataTypeName) {
-		case "integer":
+		case INTEGER:
 			return Integer.parseInt(value);
-		case "float":
+		case FLOAT:
 			return Float.parseFloat(value) ;
-		case "boolean":
+		case BOOLEAN:
 			return Boolean.parseBoolean(value) ;
+		case BYTE:
+			return Byte.parseByte(value);
+		case CHAR:
+			return value.charAt(0);
+		case DOUBLE:
+			return Double.parseDouble(value);
+		case SHORT:
+			return Short.parseShort(value);
+		case LONG:
+			return Long.parseLong(value);
 		default:
 			return value;
 		}
@@ -33,7 +43,7 @@ public class DPT {
 	  * @param value
 	  * @return String
 	  */
-	private static String getPrimitiveTypeName(String value) {
+	private static Primitive getPrimitiveTypeName(String value) {
 		value = value.toLowerCase();
 		
 		// Check if it's numeric
@@ -41,30 +51,48 @@ public class DPT {
 
 			//  Check if it's float
 			if( value.matches("([+-]?\\d*\\.\\d*)") ) {
-				return "float";
+				double valueAsDouble = Double.parseDouble(value);
+				if(valueAsDouble <= Float.MAX_VALUE && valueAsDouble >= Float.MIN_VALUE) {
+					return Primitive.FLOAT;
+				}else {
+					return Primitive.DOUBLE;
+				}
 			}else {
-				return "integer";
+				Long valueAsLong = Long.parseLong(value);
+				if(valueAsLong <= Byte.MAX_VALUE && valueAsLong >= Byte.MIN_VALUE) {
+					return Primitive.BYTE;
+				}else if(valueAsLong <= Short.MAX_VALUE && valueAsLong >= Short.MIN_VALUE) {
+					return Primitive.SHORT;
+				}else if(valueAsLong <= Integer.MAX_VALUE && valueAsLong >= Integer.MIN_VALUE) {
+					return Primitive.INTEGER;
+				}else {
+					return Primitive.LONG;
+				}
 			}
 
 		}
 		// this means that we have a string but we need to know if it's a boolean.
 		else {
-			if(value.matches("[true|false]*")) {
-				return "boolean";
+			if(value.matches("(true)|(false)")) {
+				return Primitive.BOOLEAN;
 			}else {
-				return "string";
+				if(value.length() == 1) {
+					return Primitive.CHAR;
+				}
+				return Primitive.STRING;
 			}
 		}	
 	}
 	
 	public static void main(String arg[]) {
 		// Data type supported: 'String', 'Float', 'Integer', and 'Boolean'.
-		String value = "-2.2";
-		String primitiveTypeName = getPrimitiveTypeName(value);
+		String value = "true";
+		Primitive primitiveTypeName = getPrimitiveTypeName(value);
+		System.out.println(primitiveTypeName);
 		Object valueConverted = castToPrimitiveType(primitiveTypeName,value);
-		
 		// Display the class name.
 		System.out.println(valueConverted.getClass().getName());
+		
 	}
 	
 }
